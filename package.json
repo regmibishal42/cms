@@ -1,0 +1,9 @@
+{
+  "name": "cms",
+  "version": "1.0.0",
+  "description": "Final Task Infodevlopers",
+  "main": "index.js",
+  "repository": "https://github.com/regmibishal42/cms.git",
+  "author": "Bishal Regmi",
+  "license": "MIT"
+}
