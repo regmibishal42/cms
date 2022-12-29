@@ -7,6 +7,11 @@ const fetchAllUsers = async()=>{
     return await UserModel.findAll();
 }
 
+// login user
+const loginUser = async(username)=>{
+    return await UserModel.findOne({where:{username:username}});
+}
+
 // find users by id
 const fetchUserById = async(id)=>{
     return await UserModel.findByPk(id);
@@ -36,6 +41,7 @@ const deleteUserAccount = async(id)=>{
 
 export {
     fetchAllUsers,
+    loginUser,
     fetchUserById,
     createNewUser,
     changeUserRole,

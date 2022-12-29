@@ -9,6 +9,7 @@ import {
 } from '../repository/user-repository.js';
 import userValidator from '../validators/user_validators.js';
 import customResponse from '../utils/custom_response.js';
+import { hashPassword } from '../utils/password_hashing.js';
 
 
 const get_all_users = async(req,res,next)=>{
@@ -24,7 +25,6 @@ const create_new_user = async(req,res,next)=>{
     try {
         const {username,password,email} = req.body;
         const role = 'customer';
-        console.log(req.body);
         console.log('User Image Name is ',req.userProfileImage)
         await userValidator.create_user_validation.validateAsync({
             username,
@@ -33,8 +33,9 @@ const create_new_user = async(req,res,next)=>{
             image:req.userProfileImage,
             role,
         });
-    const user = await createNewUser({username,password,image:req.userProfileImage,email});
-    customResponse(res,200,user,'Users Create Method','Post');   
+    const hashedPassword = await hashPassword(password);
+    const user = await createNewUser({username,password:hashedPassword,image:req.userProfileImage,email});
+     customResponse(res,200,user,'Users Create Method','Post');   
     } catch (error) {
         next(new Error(error));
     }

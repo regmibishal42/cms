@@ -18,8 +18,6 @@ const uploadMiddleware = multer({
     fileFilter:(req,file,cb)=>{
         const fileType = file.mimetype;
         const acceptedFile = ['image/jpg','image/jpeg','image/png'];
-        console.log(req.file);
-        console.log(req.userProfileImage)
         if(!acceptedFile.includes(fileType)){
             console.log('File accepted')
             cb(new Error("Only Jpeg or png Images are Allowed"),false);
