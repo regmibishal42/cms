@@ -2,7 +2,7 @@ import express from 'express';
 import * as dotenv from 'dotenv';
 dotenv.config();
 import db from './config/db.js';
-
+import userRoutes from './controllers/user_controller.js';
 const app = express();
 app.use(express.json());
 
@@ -10,6 +10,7 @@ app.use(express.json());
 (async()=>{
     try {
         db.authenticate('connected');
+        db.sync({alter:true});
         console.log('Connected to postgres');
         
     } catch (error) {
@@ -20,7 +21,14 @@ app.use(express.json());
 
 
 // routes
+app.use('/users',userRoutes);
 
+app.use((error,req,res)=>{
+    return res.status(400).json({
+        message:'New Error Occured',
+        error
+    });
+});
 
 
 

@@ -1,5 +1,5 @@
-import UserModel from "../models/UserModel";
-import db from "../config/db";
+import UserModel from "../models/UserModel.js";
+import db from "../config/db.js";
 
 
 // for fetching all users --admin-dashboard
@@ -37,6 +37,7 @@ const deleteUserAccount = async(id)=>{
 export {
     fetchAllUsers,
     fetchUserById,
+    createNewUser,
     changeUserRole,
     updateUserDetails,
     deleteUserAccount
