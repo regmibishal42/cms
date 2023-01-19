@@ -3,8 +3,14 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import db from './config/db.js';
 import userRoutes from './controllers/user_controller.js';
+import passport from 'passport';
 const app = express();
 app.use(express.json());
+
+
+import passportCreate from './utils/jwt_strategy.js';
+passportCreate(passport);
+app.use(passport.initialize());
 
 
 (async()=>{

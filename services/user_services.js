@@ -5,12 +5,15 @@ import {
     updateUserDetails,
     deleteUserAccount,
     createNewUser,
+    loginUser,
 
 } from '../repository/user-repository.js';
 import userValidator from '../validators/user_validators.js';
 import customResponse from '../utils/custom_response.js';
-import { hashPassword } from '../utils/password_hashing.js';
+import { hashPassword,comparePasswords } from '../utils/password_hashing.js';
 import fs from 'fs';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
 const get_all_users = async(req,res,next)=>{
     try{
@@ -123,7 +126,31 @@ const delete_user_account = async(req,res,next)=>{
         console.log('Error While Deleting User');
         next(new Error(error));
     }
-}
+};
+
+const login_user = async(req,res,next)=>{
+    try {
+        const {username,password} = req.body;
+        await userValidator.login_credentials_validator.validateAsync({
+            username,
+            password
+        });
+        const user = await loginUser(username);
+        const isMatch = comparePasswords({enteredPassword:password,storedPassword:user?.dataValues?.password});
+        if(isMatch){
+            const token = jwt.sign({
+                iss: username,
+                sub: user.id,
+              }, process.env.SECRET_HASH_KEY);
+              return res.status(200).json(token);
+        }
+        return next(new Error('Login Failed!Invalid Username or Password'));
+        
+    } catch (error) {
+        console.log('Error While Logging In');
+        next(new Error(error));
+    }
+};
 
 export {
     get_all_users,
@@ -131,5 +158,6 @@ export {
     get_user_by_id,
     change_user_role,
     update_user_details,
-    delete_user_account
+    delete_user_account,
+    login_user
 }

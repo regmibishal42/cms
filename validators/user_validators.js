@@ -24,11 +24,17 @@ const user_update_validation = Joi.object({
     // .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
 });
 
+const login_credentials_validator = Joi.object({
+    username:Joi.string().min(4).max(20).required(),
+    password:Joi.string().min(4).max(20).required(),
+})
+
 const userValidator = {
     create_user_validation,
     parameters_validation,
     user_update_validation,
-    user_role_validation
+    user_role_validation,
+    login_credentials_validator
 };
 
 export default userValidator;
