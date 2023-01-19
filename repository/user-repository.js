@@ -27,10 +27,8 @@ const changeUserRole = async(role,id)=>{
 }
 
 // update password or image
-const updateUserDetails = async(id,password,image)=>{
-    if(password?.length && !image?.length) return await UserModel.update({password},{where:{id}});
-    else if(!password.length && image?.length) return await UserModel.update({image},{where:{id}});
-    else return await UserModel.update({password,image},{where:{id}});
+const updateUserDetails = async(data)=>{
+     await UserModel.update(data,{where:{id:data.id}});
 };
 
 //delete a user

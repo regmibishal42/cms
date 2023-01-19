@@ -10,7 +10,7 @@ import {
 import userValidator from '../validators/user_validators.js';
 import customResponse from '../utils/custom_response.js';
 import { hashPassword } from '../utils/password_hashing.js';
-
+import fs from 'fs';
 
 const get_all_users = async(req,res,next)=>{
     try{
@@ -25,7 +25,7 @@ const create_new_user = async(req,res,next)=>{
     try {
         const {username,password,email} = req.body;
         const role = 'customer';
-        console.log('User Image Name is ',req.userProfileImage)
+        console.log('User Image Name is ',req.userProfileImage);
         await userValidator.create_user_validation.validateAsync({
             username,
             password,
@@ -39,9 +39,97 @@ const create_new_user = async(req,res,next)=>{
     } catch (error) {
         next(new Error(error));
     }
+};
+
+const get_user_by_id = async(req,res,next)=>{
+    try{
+    const {id} = req.params;
+    await userValidator.parameters_validation.validateAsync({
+        id
+    });
+    const user = await fetchUserById(id);
+    return customResponse(res,200,user,'Get User By Id','Get'); 
+    }catch(e){
+        next(new Error(e));
+    }
+};
+// only to be performed by admin
+const change_user_role = async(req,res,next)=>{
+    try {
+        const {id} = req.params;
+        const {role} = req.body;
+        await userValidator.user_role_validation.validateAsync({
+            id,role
+        });
+        const user = await changeUserRole(role,id);
+       return customResponse(res,200,user,'Update User Role','Put');
+
+    } catch (error) {
+        next(new Error(error));
+    }
+};
+
+const update_user_details = async(req,res,next)=>{
+    try {
+        const {id} = req.params;
+        const {password} = req.body;
+
+        console.log('User Image Name is ',req.userProfileImage);
+        const user = await fetchUserById(id);
+        if(!user) return next(new Error('User Doesnot Exist'));
+        let image = req.userProfileImage;
+        console.log('Image is Found',user?.dataValues?.image);
+        
+        if(image != undefined){
+            let oldImage = user?.dataValues?.image;
+        // delete previous image in public folder
+        const path = `./public/${oldImage}`;
+        if(fs.existsSync(path)){
+            fs.unlink(path,(err)=>{
+                if(err) {
+                    console.log('Error While Deleting The File',err);
+                    return;
+             }
+                console.log(oldImage,' Deleated');
+    
+            });
+        }
+        };
+        const hashedPassword = await hashPassword(password);
+        console.log(password,hashedPassword);
+        const data = (image != undefined) ? {image,id,password:hashedPassword} : {id,password:hashedPassword};
+        await userValidator.user_update_validation.validateAsync({
+            id,password
+        });
+        await updateUserDetails(data);
+        const updatedUser = await fetchUserById(id);
+        return customResponse(res,200,updatedUser,'Update Details Updated','Put');
+
+    } catch (error) {
+        console.log('Error While Updating User Details');
+        console.log(error.stack)
+        next(new Error(error));
+    }
+};
+
+const delete_user_account = async(req,res,next)=>{
+    try {
+        const {id} = req.params;
+        await userValidator.parameters_validation.validateAsync({id});
+        const isDeleated = await deleteUserAccount(id);
+        return customResponse(res,200,isDeleated,'User Delete','Delete');
+
+    } catch (error) {
+        console.log('Error While Deleting User');
+        next(new Error(error));
+    }
 }
 
 export {
     get_all_users,
     create_new_user,
+    get_user_by_id,
+    change_user_role,
+    update_user_details,
+    delete_user_account
 }
