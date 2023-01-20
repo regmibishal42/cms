@@ -2,7 +2,11 @@ import express from 'express';
 import * as dotenv from 'dotenv';
 dotenv.config();
 import db from './config/db.js';
+// controllers
 import userRoutes from './controllers/user_controller.js';
+import categoryRoutes from './controllers/category_controller.js';
+import foodRoutes from './controllers/food_controller.js';
+
 import passport from 'passport';
 const app = express();
 app.use(express.json());
@@ -28,13 +32,17 @@ app.use(passport.initialize());
 
 // routes
 app.use('/users',userRoutes);
+app.use('/category',categoryRoutes);
+app.use('/food',foodRoutes);
 
-app.use((error,req,res)=>{
+
+app.use((error,req,res,next)=>{
     return res.status(400).json({
-        message:'New Error Occured',
+        success:false,
+        message:"An Error Occured",
         error
     });
-});
+})
 
 
 
