@@ -51,7 +51,11 @@ const get_user_by_id = async(req,res,next)=>{
         id
     });
     const user = await fetchUserById(id);
-    return customResponse(res,200,user,'Get User By Id','Get'); 
+    if(user.dataValues.id===req.user.dataValues.id){
+        return customResponse(res,200,user,'Get User By Id','Get'); 
+    }
+
+    return next(new Error('Not Authorized To Access Other Profile'));
     }catch(e){
         next(new Error(e));
     }
@@ -136,7 +140,7 @@ const login_user = async(req,res,next)=>{
             password
         });
         const user = await loginUser(username);
-        const isMatch = comparePasswords({enteredPassword:password,storedPassword:user?.dataValues?.password});
+        const isMatch = await comparePasswords({enteredPassword:password,storedPassword:user?.dataValues?.password});
         if(isMatch){
             const token = jwt.sign({
                 iss: username,

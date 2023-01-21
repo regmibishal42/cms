@@ -11,14 +11,13 @@ const OrderModel = db.define('order',{
         type:DataTypes.DATE,
         default:DataTypes.NOW,
     },
-    totalPrice:{
+    total_price:{
         type:DataTypes.INTEGER,
         allowNull:false,
     },
     order_status:{
         type:DataTypes.STRING(20),
         defaultValue:'received',
-        allowNull:false,
     },
     user_id:{
         type:DataTypes.INTEGER,

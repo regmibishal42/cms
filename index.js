@@ -6,6 +6,7 @@ import db from './config/db.js';
 import userRoutes from './controllers/user_controller.js';
 import categoryRoutes from './controllers/category_controller.js';
 import foodRoutes from './controllers/food_controller.js';
+import orderRoutes from './controllers/order_controller.js';
 
 import passport from 'passport';
 const app = express();
@@ -34,13 +35,14 @@ app.use(passport.initialize());
 app.use('/users',userRoutes);
 app.use('/category',categoryRoutes);
 app.use('/food',foodRoutes);
+app.use('/order',orderRoutes);
 
 
 app.use((error,req,res,next)=>{
     return res.status(400).json({
         success:false,
         message:"An Error Occured",
-        error
+        error:error.message
     });
 })
 
